@@ -1,0 +1,27 @@
+{
+  "name": "perplexity-clone",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "bun run index.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "prisma": "^7.8.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@ai-sdk/google": "^3.0.79",
+    "@openrouter/ai-sdk-provider": "^2.9.0",
+    "@prisma/client": "^7.8.0",
+    "@prisma/extension-accelerate": "^3.0.1",
+    "@tavily/core": "^0.7.3",
+    "@types/express": "^5.0.6",
+    "ai": "^6.0.191",
+    "express": "^5.2.1",
+    "zod": "^4.4.3"
+  }
+}
