@@ -11,12 +11,6 @@ app.use(express.json());
 
 const tvlyClient = tavily({ apiKey: process.env.TAVILY_API_KEY });
 
-app.get("/health", (req, res) => {
-  res.status(200).json({
-    message: "Hello from the server",
-  });
-});
-
 app.get("/chat", async (req, res) => {
   // SETP 1 -> Get the user search query
   const { query } = req.body;
