@@ -10,12 +10,15 @@ export const chatRouter = Router();
 
 chatRouter.post("/chat", async (req, res) => {
   const userId = req.userId!;
-  const { query, conversationId } = req.body as {
-    query: string;
+  const { query, prompt, conversationId } = req.body as {
+    query?: string;
+    prompt?: string;
     conversationId?: string;
   };
 
-  if (!query?.trim()) {
+  const activeQuery = query || prompt;
+
+  if (!activeQuery?.trim()) {
     res.status(400).json({ message: "query is required" });
     return;
   }
@@ -31,7 +34,7 @@ chatRouter.post("/chat", async (req, res) => {
     conversation = await prisma.conversation.create({
       data: {
         userId,
-        title: query.slice(0, 120), // Use first 120 chars as title
+        title: activeQuery.slice(0, 120), // Use first 120 chars as title
       },
     });
   }
@@ -41,21 +44,21 @@ chatRouter.post("/chat", async (req, res) => {
     data: {
       conversationId: conversation.id,
       role: "User",
-      content: query,
+      content: activeQuery,
     },
   });
 
   // ── 3. Orchestration: embed → vector cache → web search fallback ─────────
-  const { sources, cached, embedding } = await resolveSearchContext(query);
+  const { sources, cached, embedding } = await resolveSearchContext(activeQuery);
 
   // ── 4. Build prompt ───────────────────────────────────────────────────────
   const sourcesText = sources
     .map((s, i) => `[${i + 1}] ${s.title}\nURL: ${s.url}\n${s.content}`)
     .join("\n\n");
 
-  const prompt = PROMPT_TEMPLATE.replace("{{WEB_SEARCH_RESULTS}}", sourcesText).replace(
+  const promptText = PROMPT_TEMPLATE.replace("{{WEB_SEARCH_RESULTS}}", sourcesText).replace(
     "{{USER_QUERY}}",
-    query,
+    activeQuery,
   );
 
   // ── 5. Stream LLM response ────────────────────────────────────────────────
@@ -65,7 +68,7 @@ chatRouter.post("/chat", async (req, res) => {
 
   const result = streamText({
     model: googleModel,
-    prompt,
+    prompt: promptText,
     system: SYSTEM_PROMPT,
   });
 
@@ -91,7 +94,7 @@ chatRouter.post("/chat", async (req, res) => {
     data: {
       conversationId: conversation.id,
       role: "Assistant",
-      content: fullAssistantResponse,
+      content: fullAssistantResponse + `\n<SOURCES_DATA>${JSON.stringify(sources.map((s) => ({ url: s.url, title: s.title })))}</SOURCES_DATA>`,
       model: "gemini-2.5-flash",
       modelProvider: "Google",
     },
@@ -99,7 +102,7 @@ chatRouter.post("/chat", async (req, res) => {
 
   // ── 9. Cache the result for future similar queries ─────────────────────────
   if (!cached) {
-    storeSearchResult(query, embedding, sources, fullAssistantResponse).catch(
+    storeSearchResult(activeQuery, embedding, sources, fullAssistantResponse).catch(
       (err) => console.error("[cache] Failed to store search result:", err),
     );
   }

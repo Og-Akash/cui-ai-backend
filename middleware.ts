@@ -10,6 +10,7 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
         res.status(403).json({
             message: "Unauthorized"
         })
+        return;
     }
 
     const {data, error} = await supabase.auth.getClaims(token)

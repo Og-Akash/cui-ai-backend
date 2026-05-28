@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import { authMiddleware } from "./middleware";
 import { prisma } from "./lib/prisma";
 import { chatRouter } from "./routes/chat";
@@ -7,6 +8,12 @@ import { conversationsRouter } from "./routes/conversations";
 const port = 4000;
 const app = express();
 
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(authMiddleware);
 
