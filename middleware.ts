@@ -5,7 +5,7 @@ import { supabase } from "./lib/client";
 export async function authMiddleware(req: Request, res: Response, next: NextFunction) {
 
     const token = req.headers.authorization;
-    
+
     if(!token) {
         res.status(403).json({
             message: "Unauthorized"

@@ -2,18 +2,12 @@ import { Router } from "express";
 import { streamText } from "ai";
 import { googleModel } from "../lib/models";
 import { prisma } from "../lib/prisma";
-import { performWebSearch } from "../services/webSearch";
+import { resolveSearchContext } from "../services/orchestrator";
+import { storeSearchResult } from "../services/vectorSearch";
 import { PROMPT_TEMPLATE, SYSTEM_PROMPT, FOLLOW_UPS_PROMPT } from "../prompt";
 
 export const chatRouter = Router();
 
-// ---------------------------------------------------------------------------
-// POST /chat
-// Accepts { query, conversationId? }.
-//   - If conversationId is provided, appends to that conversation.
-//   - Otherwise creates a new conversation titled after the query.
-// Streams the LLM answer then flushes sources as a final SSE event.
-// ---------------------------------------------------------------------------
 chatRouter.post("/chat", async (req, res) => {
   const userId = req.userId!;
   const { query, conversationId } = req.body as {
@@ -51,16 +45,11 @@ chatRouter.post("/chat", async (req, res) => {
     },
   });
 
-  // ── 3. Web search ─────────────────────────────────────────────────────────
-  // TODO (vector DB): before calling Tavily, check if a semantically similar
-  // query has already been indexed, and reuse stored results.
-  const searchPayload = await performWebSearch(query);
-
-  // TODO (vector DB): after getting results, embed searchPayload.rawResult
-  // and upsert into your vector store keyed by query + conversationId.
+  // ── 3. Orchestration: embed → vector cache → web search fallback ─────────
+  const { sources, cached, embedding } = await resolveSearchContext(query);
 
   // ── 4. Build prompt ───────────────────────────────────────────────────────
-  const sourcesText = searchPayload.sources
+  const sourcesText = sources
     .map((s, i) => `[${i + 1}] ${s.title}\nURL: ${s.url}\n${s.content}`)
     .join("\n\n");
 
@@ -89,11 +78,11 @@ chatRouter.post("/chat", async (req, res) => {
 
   // ── 6. Flush sources as a delimiter-separated event ───────────────────────
   res.write("\n<SOURCES>\n");
-  res.write(JSON.stringify(searchPayload.sources.map((s) => ({ url: s.url, title: s.title }))));
+  res.write(JSON.stringify(sources.map((s) => ({ url: s.url, title: s.title }))));
 
-  // ── 7. Flush conversation id so the frontend can anchor follow-ups ─────────
+  // ── 7. Flush conversation id + cache status ────────────────────────────────
   res.write("\n<META>\n");
-  res.write(JSON.stringify({ conversationId: conversation.id }));
+  res.write(JSON.stringify({ conversationId: conversation.id, cached }));
 
   res.end();
 
@@ -107,14 +96,15 @@ chatRouter.post("/chat", async (req, res) => {
       modelProvider: "Google",
     },
   });
+
+  // ── 9. Cache the result for future similar queries ─────────────────────────
+  if (!cached) {
+    storeSearchResult(query, embedding, sources, fullAssistantResponse).catch(
+      (err) => console.error("[cache] Failed to store search result:", err),
+    );
+  }
 });
 
-// ---------------------------------------------------------------------------
-// GET /chat/followUps?conversationId=xxx
-// Returns follow-up questions for the last assistant message in a conversation.
-// Re-uses the original search context stored in the conversation messages so
-// we don't burn another Tavily call.
-// ---------------------------------------------------------------------------
 chatRouter.get("/chat/followUps", async (req, res) => {
   const userId = req.userId!;
   const { conversationId } = req.query as { conversationId: string };

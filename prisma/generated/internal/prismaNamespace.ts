@@ -386,7 +386,8 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 export const ModelName = {
   User: 'User',
   Conversation: 'Conversation',
-  Message: 'Message'
+  Message: 'Message',
+  SearchCache: 'SearchCache'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -402,7 +403,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "conversation" | "message"
+    modelProps: "user" | "conversation" | "message" | "searchCache"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -628,6 +629,64 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    SearchCache: {
+      payload: Prisma.$SearchCachePayload<ExtArgs>
+      fields: Prisma.SearchCacheFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SearchCacheFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SearchCachePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SearchCacheFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SearchCachePayload>
+        }
+        findFirst: {
+          args: Prisma.SearchCacheFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SearchCachePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SearchCacheFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SearchCachePayload>
+        }
+        findMany: {
+          args: Prisma.SearchCacheFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SearchCachePayload>[]
+        }
+        delete: {
+          args: Prisma.SearchCacheDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SearchCachePayload>
+        }
+        update: {
+          args: Prisma.SearchCacheUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SearchCachePayload>
+        }
+        deleteMany: {
+          args: Prisma.SearchCacheDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SearchCacheUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SearchCacheUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SearchCachePayload>[]
+        }
+        aggregate: {
+          args: Prisma.SearchCacheAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSearchCache>
+        }
+        groupBy: {
+          args: Prisma.SearchCacheGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SearchCacheGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SearchCacheCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SearchCacheCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -701,12 +760,30 @@ export const MessageScalarFieldEnum = {
 export type MessageScalarFieldEnum = (typeof MessageScalarFieldEnum)[keyof typeof MessageScalarFieldEnum]
 
 
+export const SearchCacheScalarFieldEnum = {
+  id: 'id',
+  query: 'query',
+  sources: 'sources',
+  llmResponse: 'llmResponse',
+  createdAt: 'createdAt'
+} as const
+
+export type SearchCacheScalarFieldEnum = (typeof SearchCacheScalarFieldEnum)[keyof typeof SearchCacheScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {
@@ -723,6 +800,15 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
 
@@ -798,6 +884,20 @@ export type EnumModelProviderFieldRefInput<$PrismaModel> = FieldRefInputType<$Pr
  * Reference to a field of type 'ModelProvider[]'
  */
 export type ListEnumModelProviderFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ModelProvider[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Json'
+ */
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+/**
+ * Reference to a field of type 'QueryMode'
+ */
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 
@@ -927,6 +1027,7 @@ export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
   conversation?: Prisma.ConversationOmit
   message?: Prisma.MessageOmit
+  searchCache?: Prisma.SearchCacheOmit
 }
 
 /* Types for Logging */
