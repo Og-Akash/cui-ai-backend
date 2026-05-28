@@ -3,13 +3,29 @@ import { tavily } from "@tavily/core";
 import { PROMPT_TEMPLATE, SYSTEM_PROMPT } from "./prompt";
 import { streamText } from "ai";
 import { googleModel } from "./lib/models";
+import { authMiddleware } from "./middleware";
+import { supabase } from "./lib/client";
+import { prisma } from "./lib/prisma";
 
 const port = 4000;
 const app = express();
 
 app.use(express.json());
+app.use(authMiddleware)
 
 const tvlyClient = tavily({ apiKey: process.env.TAVILY_API_KEY });
+
+app.get("/health", async (req, res) => {
+  const userId = req.userId
+
+  const user = await prisma.user.findFirst({
+    where: {
+      id: userId
+    }
+  })
+
+  res.json({ user })
+})
 
 app.get("/chat", async (req, res) => {
   // SETP 1 -> Get the user search query
