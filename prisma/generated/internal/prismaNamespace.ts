@@ -694,6 +694,7 @@ export const MessageScalarFieldEnum = {
   role: 'role',
   content: 'content',
   model: 'model',
+  modelProvider: 'modelProvider',
   createdAt: 'createdAt'
 } as const
 
@@ -783,6 +784,20 @@ export type EnumMessageRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$Pris
  * Reference to a field of type 'MessageRole[]'
  */
 export type ListEnumMessageRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MessageRole[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ModelProvider'
+ */
+export type EnumModelProviderFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ModelProvider'>
+    
+
+
+/**
+ * Reference to a field of type 'ModelProvider[]'
+ */
+export type ListEnumModelProviderFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ModelProvider[]'>
     
 
 

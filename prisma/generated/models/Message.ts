@@ -30,6 +30,7 @@ export type MessageMinAggregateOutputType = {
   role: $Enums.MessageRole | null
   content: string | null
   model: string | null
+  modelProvider: $Enums.ModelProvider | null
   createdAt: Date | null
 }
 
@@ -39,6 +40,7 @@ export type MessageMaxAggregateOutputType = {
   role: $Enums.MessageRole | null
   content: string | null
   model: string | null
+  modelProvider: $Enums.ModelProvider | null
   createdAt: Date | null
 }
 
@@ -48,6 +50,7 @@ export type MessageCountAggregateOutputType = {
   role: number
   content: number
   model: number
+  modelProvider: number
   createdAt: number
   _all: number
 }
@@ -59,6 +62,7 @@ export type MessageMinAggregateInputType = {
   role?: true
   content?: true
   model?: true
+  modelProvider?: true
   createdAt?: true
 }
 
@@ -68,6 +72,7 @@ export type MessageMaxAggregateInputType = {
   role?: true
   content?: true
   model?: true
+  modelProvider?: true
   createdAt?: true
 }
 
@@ -77,6 +82,7 @@ export type MessageCountAggregateInputType = {
   role?: true
   content?: true
   model?: true
+  modelProvider?: true
   createdAt?: true
   _all?: true
 }
@@ -159,6 +165,7 @@ export type MessageGroupByOutputType = {
   role: $Enums.MessageRole
   content: string
   model: string | null
+  modelProvider: $Enums.ModelProvider | null
   createdAt: Date
   _count: MessageCountAggregateOutputType | null
   _min: MessageMinAggregateOutputType | null
@@ -189,6 +196,7 @@ export type MessageWhereInput = {
   role?: Prisma.EnumMessageRoleFilter<"Message"> | $Enums.MessageRole
   content?: Prisma.StringFilter<"Message"> | string
   model?: Prisma.StringNullableFilter<"Message"> | string | null
+  modelProvider?: Prisma.EnumModelProviderNullableFilter<"Message"> | $Enums.ModelProvider | null
   createdAt?: Prisma.DateTimeFilter<"Message"> | Date | string
   conversation?: Prisma.XOR<Prisma.ConversationScalarRelationFilter, Prisma.ConversationWhereInput>
 }
@@ -199,6 +207,7 @@ export type MessageOrderByWithRelationInput = {
   role?: Prisma.SortOrder
   content?: Prisma.SortOrder
   model?: Prisma.SortOrderInput | Prisma.SortOrder
+  modelProvider?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   conversation?: Prisma.ConversationOrderByWithRelationInput
 }
@@ -212,6 +221,7 @@ export type MessageWhereUniqueInput = Prisma.AtLeast<{
   role?: Prisma.EnumMessageRoleFilter<"Message"> | $Enums.MessageRole
   content?: Prisma.StringFilter<"Message"> | string
   model?: Prisma.StringNullableFilter<"Message"> | string | null
+  modelProvider?: Prisma.EnumModelProviderNullableFilter<"Message"> | $Enums.ModelProvider | null
   createdAt?: Prisma.DateTimeFilter<"Message"> | Date | string
   conversation?: Prisma.XOR<Prisma.ConversationScalarRelationFilter, Prisma.ConversationWhereInput>
 }, "id">
@@ -222,6 +232,7 @@ export type MessageOrderByWithAggregationInput = {
   role?: Prisma.SortOrder
   content?: Prisma.SortOrder
   model?: Prisma.SortOrderInput | Prisma.SortOrder
+  modelProvider?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.MessageCountOrderByAggregateInput
   _max?: Prisma.MessageMaxOrderByAggregateInput
@@ -237,6 +248,7 @@ export type MessageScalarWhereWithAggregatesInput = {
   role?: Prisma.EnumMessageRoleWithAggregatesFilter<"Message"> | $Enums.MessageRole
   content?: Prisma.StringWithAggregatesFilter<"Message"> | string
   model?: Prisma.StringNullableWithAggregatesFilter<"Message"> | string | null
+  modelProvider?: Prisma.EnumModelProviderNullableWithAggregatesFilter<"Message"> | $Enums.ModelProvider | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Message"> | Date | string
 }
 
@@ -245,6 +257,7 @@ export type MessageCreateInput = {
   role: $Enums.MessageRole
   content: string
   model?: string | null
+  modelProvider?: $Enums.ModelProvider | null
   createdAt?: Date | string
   conversation: Prisma.ConversationCreateNestedOneWithoutMessagesInput
 }
@@ -255,6 +268,7 @@ export type MessageUncheckedCreateInput = {
   role: $Enums.MessageRole
   content: string
   model?: string | null
+  modelProvider?: $Enums.ModelProvider | null
   createdAt?: Date | string
 }
 
@@ -263,6 +277,7 @@ export type MessageUpdateInput = {
   role?: Prisma.EnumMessageRoleFieldUpdateOperationsInput | $Enums.MessageRole
   content?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  modelProvider?: Prisma.NullableEnumModelProviderFieldUpdateOperationsInput | $Enums.ModelProvider | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   conversation?: Prisma.ConversationUpdateOneRequiredWithoutMessagesNestedInput
 }
@@ -273,6 +288,7 @@ export type MessageUncheckedUpdateInput = {
   role?: Prisma.EnumMessageRoleFieldUpdateOperationsInput | $Enums.MessageRole
   content?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  modelProvider?: Prisma.NullableEnumModelProviderFieldUpdateOperationsInput | $Enums.ModelProvider | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -282,6 +298,7 @@ export type MessageCreateManyInput = {
   role: $Enums.MessageRole
   content: string
   model?: string | null
+  modelProvider?: $Enums.ModelProvider | null
   createdAt?: Date | string
 }
 
@@ -290,6 +307,7 @@ export type MessageUpdateManyMutationInput = {
   role?: Prisma.EnumMessageRoleFieldUpdateOperationsInput | $Enums.MessageRole
   content?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  modelProvider?: Prisma.NullableEnumModelProviderFieldUpdateOperationsInput | $Enums.ModelProvider | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -299,6 +317,7 @@ export type MessageUncheckedUpdateManyInput = {
   role?: Prisma.EnumMessageRoleFieldUpdateOperationsInput | $Enums.MessageRole
   content?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  modelProvider?: Prisma.NullableEnumModelProviderFieldUpdateOperationsInput | $Enums.ModelProvider | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -318,6 +337,7 @@ export type MessageCountOrderByAggregateInput = {
   role?: Prisma.SortOrder
   content?: Prisma.SortOrder
   model?: Prisma.SortOrder
+  modelProvider?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -327,6 +347,7 @@ export type MessageMaxOrderByAggregateInput = {
   role?: Prisma.SortOrder
   content?: Prisma.SortOrder
   model?: Prisma.SortOrder
+  modelProvider?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -336,6 +357,7 @@ export type MessageMinOrderByAggregateInput = {
   role?: Prisma.SortOrder
   content?: Prisma.SortOrder
   model?: Prisma.SortOrder
+  modelProvider?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -389,11 +411,16 @@ export type NullableStringFieldUpdateOperationsInput = {
   set?: string | null
 }
 
+export type NullableEnumModelProviderFieldUpdateOperationsInput = {
+  set?: $Enums.ModelProvider | null
+}
+
 export type MessageCreateWithoutConversationInput = {
   id?: string
   role: $Enums.MessageRole
   content: string
   model?: string | null
+  modelProvider?: $Enums.ModelProvider | null
   createdAt?: Date | string
 }
 
@@ -402,6 +429,7 @@ export type MessageUncheckedCreateWithoutConversationInput = {
   role: $Enums.MessageRole
   content: string
   model?: string | null
+  modelProvider?: $Enums.ModelProvider | null
   createdAt?: Date | string
 }
 
@@ -440,6 +468,7 @@ export type MessageScalarWhereInput = {
   role?: Prisma.EnumMessageRoleFilter<"Message"> | $Enums.MessageRole
   content?: Prisma.StringFilter<"Message"> | string
   model?: Prisma.StringNullableFilter<"Message"> | string | null
+  modelProvider?: Prisma.EnumModelProviderNullableFilter<"Message"> | $Enums.ModelProvider | null
   createdAt?: Prisma.DateTimeFilter<"Message"> | Date | string
 }
 
@@ -448,6 +477,7 @@ export type MessageCreateManyConversationInput = {
   role: $Enums.MessageRole
   content: string
   model?: string | null
+  modelProvider?: $Enums.ModelProvider | null
   createdAt?: Date | string
 }
 
@@ -456,6 +486,7 @@ export type MessageUpdateWithoutConversationInput = {
   role?: Prisma.EnumMessageRoleFieldUpdateOperationsInput | $Enums.MessageRole
   content?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  modelProvider?: Prisma.NullableEnumModelProviderFieldUpdateOperationsInput | $Enums.ModelProvider | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -464,6 +495,7 @@ export type MessageUncheckedUpdateWithoutConversationInput = {
   role?: Prisma.EnumMessageRoleFieldUpdateOperationsInput | $Enums.MessageRole
   content?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  modelProvider?: Prisma.NullableEnumModelProviderFieldUpdateOperationsInput | $Enums.ModelProvider | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -472,6 +504,7 @@ export type MessageUncheckedUpdateManyWithoutConversationInput = {
   role?: Prisma.EnumMessageRoleFieldUpdateOperationsInput | $Enums.MessageRole
   content?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  modelProvider?: Prisma.NullableEnumModelProviderFieldUpdateOperationsInput | $Enums.ModelProvider | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -483,6 +516,7 @@ export type MessageSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   role?: boolean
   content?: boolean
   model?: boolean
+  modelProvider?: boolean
   createdAt?: boolean
   conversation?: boolean | Prisma.ConversationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["message"]>
@@ -493,6 +527,7 @@ export type MessageSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   role?: boolean
   content?: boolean
   model?: boolean
+  modelProvider?: boolean
   createdAt?: boolean
   conversation?: boolean | Prisma.ConversationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["message"]>
@@ -503,6 +538,7 @@ export type MessageSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   role?: boolean
   content?: boolean
   model?: boolean
+  modelProvider?: boolean
   createdAt?: boolean
   conversation?: boolean | Prisma.ConversationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["message"]>
@@ -513,10 +549,11 @@ export type MessageSelectScalar = {
   role?: boolean
   content?: boolean
   model?: boolean
+  modelProvider?: boolean
   createdAt?: boolean
 }
 
-export type MessageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "conversationId" | "role" | "content" | "model" | "createdAt", ExtArgs["result"]["message"]>
+export type MessageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "conversationId" | "role" | "content" | "model" | "modelProvider" | "createdAt", ExtArgs["result"]["message"]>
 export type MessageInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   conversation?: boolean | Prisma.ConversationDefaultArgs<ExtArgs>
 }
@@ -538,6 +575,7 @@ export type $MessagePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     role: $Enums.MessageRole
     content: string
     model: string | null
+    modelProvider: $Enums.ModelProvider | null
     createdAt: Date
   }, ExtArgs["result"]["message"]>
   composites: {}
@@ -968,6 +1006,7 @@ export interface MessageFieldRefs {
   readonly role: Prisma.FieldRef<"Message", 'MessageRole'>
   readonly content: Prisma.FieldRef<"Message", 'String'>
   readonly model: Prisma.FieldRef<"Message", 'String'>
+  readonly modelProvider: Prisma.FieldRef<"Message", 'ModelProvider'>
   readonly createdAt: Prisma.FieldRef<"Message", 'DateTime'>
 }
     

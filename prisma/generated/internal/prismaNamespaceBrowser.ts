@@ -99,6 +99,7 @@ export const MessageScalarFieldEnum = {
   role: 'role',
   content: 'content',
   model: 'model',
+  modelProvider: 'modelProvider',
   createdAt: 'createdAt'
 } as const
 

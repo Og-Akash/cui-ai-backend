@@ -111,6 +111,13 @@ export type StringNullableFilter<$PrismaModel = never> = {
   not?: Prisma.NestedStringNullableFilter<$PrismaModel> | string | null
 }
 
+export type EnumModelProviderNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.ModelProvider | Prisma.EnumModelProviderFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ModelProvider[] | Prisma.ListEnumModelProviderFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ModelProvider[] | Prisma.ListEnumModelProviderFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumModelProviderNullableFilter<$PrismaModel> | $Enums.ModelProvider | null
+}
+
 export type SortOrderInput = {
   sort: Prisma.SortOrder
   nulls?: Prisma.NullsOrder
@@ -142,6 +149,16 @@ export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedStringNullableFilter<$PrismaModel>
   _max?: Prisma.NestedStringNullableFilter<$PrismaModel>
+}
+
+export type EnumModelProviderNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ModelProvider | Prisma.EnumModelProviderFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ModelProvider[] | Prisma.ListEnumModelProviderFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ModelProvider[] | Prisma.ListEnumModelProviderFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumModelProviderNullableWithAggregatesFilter<$PrismaModel> | $Enums.ModelProvider | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumModelProviderNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumModelProviderNullableFilter<$PrismaModel>
 }
 
 export type NestedStringFilter<$PrismaModel = never> = {
@@ -249,6 +266,13 @@ export type NestedStringNullableFilter<$PrismaModel = never> = {
   not?: Prisma.NestedStringNullableFilter<$PrismaModel> | string | null
 }
 
+export type NestedEnumModelProviderNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.ModelProvider | Prisma.EnumModelProviderFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ModelProvider[] | Prisma.ListEnumModelProviderFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ModelProvider[] | Prisma.ListEnumModelProviderFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumModelProviderNullableFilter<$PrismaModel> | $Enums.ModelProvider | null
+}
+
 export type NestedEnumMessageRoleWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.MessageRole | Prisma.EnumMessageRoleFieldRefInput<$PrismaModel>
   in?: $Enums.MessageRole[] | Prisma.ListEnumMessageRoleFieldRefInput<$PrismaModel>
@@ -285,6 +309,16 @@ export type NestedIntNullableFilter<$PrismaModel = never> = {
   gt?: number | Prisma.IntFieldRefInput<$PrismaModel>
   gte?: number | Prisma.IntFieldRefInput<$PrismaModel>
   not?: Prisma.NestedIntNullableFilter<$PrismaModel> | number | null
+}
+
+export type NestedEnumModelProviderNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ModelProvider | Prisma.EnumModelProviderFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ModelProvider[] | Prisma.ListEnumModelProviderFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ModelProvider[] | Prisma.ListEnumModelProviderFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumModelProviderNullableWithAggregatesFilter<$PrismaModel> | $Enums.ModelProvider | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumModelProviderNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumModelProviderNullableFilter<$PrismaModel>
 }
 
 

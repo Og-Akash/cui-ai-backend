@@ -41,3 +41,18 @@ export const PROMPT_TEMPLATE = `
     {{USER_QUERY}}
 
 `
+
+export const FOLLOW_UPS_PROMPT = `
+    Based on the following conversation, generate exactly 3 insightful follow-up questions
+    the user might want to ask next. These should naturally extend the conversation.
+
+    Output only in this exact XML format:
+    <FOLLOW_UPS>
+        <question> first follow up question </question>
+        <question> second follow up question </question>
+        <question> third follow up question </question>
+    </FOLLOW_UPS>
+
+    ## Conversation History
+    {{CONVERSATION_HISTORY}}
+`

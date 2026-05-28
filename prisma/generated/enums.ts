@@ -23,3 +23,11 @@ export const AuthProvider = {
 } as const
 
 export type AuthProvider = (typeof AuthProvider)[keyof typeof AuthProvider]
+
+
+export const ModelProvider = {
+  OpenRouter: 'OpenRouter',
+  Google: 'Google'
+} as const
+
+export type ModelProvider = (typeof ModelProvider)[keyof typeof ModelProvider]
