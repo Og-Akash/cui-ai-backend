@@ -10,10 +10,13 @@ export const chatRouter = Router();
 
 chatRouter.post("/chat", async (req, res) => {
   const userId = req.userId!;
-  const { query, prompt, conversationId } = req.body as {
+  const { query, prompt, conversationId, modelId = "gemini-2.5-flash", provider = "Google", webSearchEnabled = true } = req.body as {
     query?: string;
     prompt?: string;
     conversationId?: string;
+    modelId?: string;
+    provider?: string;
+    webSearchEnabled?: boolean;
   };
 
   const activeQuery = query || prompt;
@@ -26,8 +29,8 @@ chatRouter.post("/chat", async (req, res) => {
   // ── 1. Resolve or create conversation ────────────────────────────────────
   let conversation = conversationId
     ? await prisma.conversation.findFirst({
-        where: { id: conversationId, userId },
-      })
+      where: { id: conversationId, userId },
+    })
     : null;
 
   if (!conversation) {
@@ -49,12 +52,21 @@ chatRouter.post("/chat", async (req, res) => {
   });
 
   // ── 3. Orchestration: embed → vector cache → web search fallback ─────────
-  const { sources, cached, embedding } = await resolveSearchContext(activeQuery);
+  let sources: any[] = [];
+  let cached = false;
+  let embedding: number[] = [];
+
+  if (webSearchEnabled) {
+    const context = await resolveSearchContext(activeQuery);
+    sources = context.sources;
+    cached = context.cached;
+    embedding = context.embedding;
+  }
 
   // ── 4. Build prompt ───────────────────────────────────────────────────────
-  const sourcesText = sources
-    .map((s, i) => `[${i + 1}] ${s.title}\nURL: ${s.url}\n${s.content}`)
-    .join("\n\n");
+  const sourcesText = sources.length > 0
+    ? sources.map((s, i) => `[${i + 1}] ${s.title}\nURL: ${s.url}\n${s.content}`).join("\n\n")
+    : "No web search results available.";
 
   const promptText = PROMPT_TEMPLATE.replace("{{WEB_SEARCH_RESULTS}}", sourcesText).replace(
     "{{USER_QUERY}}",
@@ -65,9 +77,13 @@ chatRouter.post("/chat", async (req, res) => {
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Connection", "keep-alive");
+  res.setHeader("X-Accel-Buffering", "no");
+
+  const { openRouterModel, google } = await import("../lib/models");
+  const activeModel = provider === "OpenRouter" ? openRouterModel(modelId) : google(modelId);
 
   const result = streamText({
-    model: googleModel,
+    model: activeModel,
     prompt: promptText,
     system: SYSTEM_PROMPT,
   });
@@ -95,13 +111,13 @@ chatRouter.post("/chat", async (req, res) => {
       conversationId: conversation.id,
       role: "Assistant",
       content: fullAssistantResponse + `\n<SOURCES_DATA>${JSON.stringify(sources.map((s) => ({ url: s.url, title: s.title })))}</SOURCES_DATA>`,
-      model: "gemini-2.5-flash",
-      modelProvider: "Google",
+      model: modelId,
+      modelProvider: provider as any,
     },
   });
 
   // ── 9. Cache the result for future similar queries ─────────────────────────
-  if (!cached) {
+  if (webSearchEnabled && !cached) {
     storeSearchResult(activeQuery, embedding, sources, fullAssistantResponse).catch(
       (err) => console.error("[cache] Failed to store search result:", err),
     );
@@ -110,7 +126,11 @@ chatRouter.post("/chat", async (req, res) => {
 
 chatRouter.get("/chat/followUps", async (req, res) => {
   const userId = req.userId!;
-  const { conversationId } = req.query as { conversationId: string };
+  const { conversationId, modelId = "gemini-2.5-flash", provider = "Google" } = req.query as {
+    conversationId: string;
+    modelId?: string;
+    provider?: string;
+  };
 
   if (!conversationId) {
     res.status(400).json({ message: "conversationId is required" });
@@ -140,8 +160,11 @@ chatRouter.get("/chat/followUps", async (req, res) => {
 
   const followUpsPrompt = FOLLOW_UPS_PROMPT.replace("{{CONVERSATION_HISTORY}}", history);
 
+  const { openRouterModel, google } = await import("../lib/models");
+  const activeModel = provider === "OpenRouter" ? openRouterModel(modelId) : google(modelId);
+
   const result = streamText({
-    model: googleModel,
+    model: activeModel,
     prompt: followUpsPrompt,
     system: SYSTEM_PROMPT,
   });
