@@ -16,6 +16,7 @@ export type WebSearchPayload = {
   query: string;
   rawResult: object;            // Full Tavily response – useful for future vector indexing
   sources: SearchSource[];
+  images: string[];             // Page-level image URLs (used by productcards rich UI)
 };
 
 const client = tavily({ apiKey: process.env.TAVILY_API_KEY });
@@ -35,6 +36,7 @@ export async function performWebSearch(query: string): Promise<WebSearchPayload>
   const rawResult = await client.search(query, {
     searchDepth: "advanced",
     includeRawContent: false,   // flip to true when you want full page text for embeddings
+    includeImages: true,        // page-level images power the productcards rich UI
     maxResults: 8,
   });
 
@@ -45,5 +47,10 @@ export async function performWebSearch(query: string): Promise<WebSearchPayload>
     score: r.score ?? 0,
   }));
 
-  return { query, rawResult, sources };
+  const images: string[] = (rawResult.images ?? [])
+    .map((img: any) => (typeof img === "string" ? img : img?.url))
+    .filter((u: unknown): u is string => typeof u === "string" && u.length > 0)
+    .slice(0, 12);
+
+  return { query, rawResult, sources, images };
 }

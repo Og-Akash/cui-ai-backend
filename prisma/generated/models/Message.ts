@@ -407,10 +407,6 @@ export type EnumMessageRoleFieldUpdateOperationsInput = {
   set?: $Enums.MessageRole
 }
 
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
-}
-
 export type NullableEnumModelProviderFieldUpdateOperationsInput = {
   set?: $Enums.ModelProvider | null
 }

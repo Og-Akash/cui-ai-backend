@@ -3,6 +3,9 @@ import cors from "cors";
 import { authMiddleware } from "./middleware";
 import { chatRouter } from "./routes/chat";
 import { conversationsRouter } from "./routes/conversations";
+import { usersRouter } from "./routes/users";
+import { personasRouter } from "./routes/personas";
+import { memoriesRouter } from "./routes/memories";
 
 const port = process.env.PORT;
 const app = express();
@@ -19,6 +22,9 @@ app.use(authMiddleware);
 // ── Routes ─────────────────────────────────────────────────────────────────
 app.use(chatRouter);
 app.use(conversationsRouter);
+app.use(usersRouter);
+app.use(personasRouter);
+app.use(memoriesRouter);
 
 // ── Health check ────────────────────────────────────────────────────────────
 app.get("/health", async (req, res) => {

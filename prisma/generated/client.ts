@@ -47,6 +47,16 @@ export { Prisma }
  */
 export type User = Prisma.UserModel
 /**
+ * Model Persona
+ * 
+ */
+export type Persona = Prisma.PersonaModel
+/**
+ * Model UserMemory
+ * 
+ */
+export type UserMemory = Prisma.UserMemoryModel
+/**
  * Model Conversation
  * 
  */

@@ -1,9 +1,9 @@
 import { embed } from "ai"
-import { google } from "./models"
+import { googleEmbeddingModel } from "./models"
 
 export async function embedQuery(query: string) {
     const { embedding } = await embed({
-        model: google.embedding("gemini-embedding-001"),
+        model: googleEmbeddingModel("gemini-embedding-001"),
         value: query,
         providerOptions: {
             google: {
