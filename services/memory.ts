@@ -74,10 +74,13 @@ type ExtractedFact = { fact: string; category: string };
 // Durable facts are things the user says about *themselves*. A message with no
 // first-person language ("best laptops 2026", "how does pgvector work") can't
 // contain one, so skip the extraction LLM call entirely for those turns.
-const FIRST_PERSON_RE = /\b(i|i'm|i've|i'd|i'll|my|me|mine|myself|we|we're|our)\b/i;
+// Also matches common first-person patterns even without explicit "I" subject.
+const FIRST_PERSON_RE =
+  /\b(i|i'm|i've|i'd|i'll|my|me|mine|myself|we|we're|our|i work|i use|i am|i have|i like|i prefer|i need|i want|i build|i'm building|i'm working)\b/i;
 
 function parseFacts(raw: string): ExtractedFact[] {
-  // Tolerate models that wrap the JSON in fences despite instructions
+  // Tolerate models that wrap the JSON in fences despite instructions.
+  // Also handles leading "thinking" text that gemini-2.5-flash may emit.
   const cleaned = raw.replace(/```(?:json)?/g, "").trim();
   const start = cleaned.indexOf("[");
   const end = cleaned.lastIndexOf("]");
@@ -122,30 +125,50 @@ export async function extractAndStoreMemories(
   assistantAnswer: string,
 ): Promise<void> {
   try {
-    if (!FIRST_PERSON_RE.test(userMessage)) return;
+    if (!FIRST_PERSON_RE.test(userMessage)) {
+      console.log("[memory] Skipped — no first-person language detected:", userMessage.slice(0, 80));
+      return;
+    }
 
     const count = await prisma.userMemory.count({ where: { userId } });
-    if (count >= MAX_MEMORIES_PER_USER) return;
+    if (count >= MAX_MEMORIES_PER_USER) {
+      console.log("[memory] Skipped — user has reached memory limit:", count);
+      return;
+    }
 
     const prompt = EXTRACTION_PROMPT.replace("{{USER_MESSAGE}}", userMessage.slice(0, 2000)).replace(
       "{{ASSISTANT_ANSWER}}",
       assistantAnswer.slice(0, 1500),
     );
 
-    // flash-lite: extraction is a trivial task, and on the free tier each model
-    // has its own RPM/RPD bucket — this keeps background extraction from
-    // competing with the user-facing chat calls for gemini-2.5-flash quota.
+    // gemini-2.5-flash extraction — thinking tokens are explicitly disabled.
+    // When thinkingBudget > 0 the raw text includes reasoning content before
+    // the JSON array, which breaks parseFacts(). Setting budget to 0 forces
+    // a direct JSON-only response, consistent with flash-lite behaviour.
     const { text } = await generateText({
-      model: google("gemini-2.5-flash-lite"),
+      model: google("gemini-2.5-flash"),
       prompt,
+      providerOptions: {
+        google: {
+          thinkingConfig: { thinkingBudget: 0 },
+        },
+      },
     });
 
+    console.log("[memory] Raw LLM response:", text.slice(0, 300));
+
     const facts = parseFacts(text);
-    if (facts.length === 0) return;
+    if (facts.length === 0) {
+      console.log("[memory] No durable facts extracted from this exchange.");
+      return;
+    }
 
     for (const { fact, category } of facts) {
       const embedding = await embedQuery(fact);
-      if (await isDuplicate(userId, embedding)) continue;
+      if (await isDuplicate(userId, embedding)) {
+        console.log(`[memory] Skipped duplicate: "${fact}"`);
+        continue;
+      }
 
       const vectorStr = `[${embedding.join(",")}]`;
       await prisma.$executeRaw`

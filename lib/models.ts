@@ -13,7 +13,7 @@ export const google = (modelId: string, customApiKey?: string) => {
 };
 
 export const googleEmbeddingModel = (modelId: string) =>
-  defaultGoogleProvider.textEmbeddingModel(modelId);
+  defaultGoogleProvider.embeddingModel(modelId);
 
 export const googleModel = google("gemini-2.5-flash");
 
