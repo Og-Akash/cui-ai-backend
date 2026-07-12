@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import { authMiddleware } from "./middleware";
+import { authMiddleware } from "./authMiddleware";
 import { chatRouter } from "./routes/chat";
 import { conversationsRouter } from "./routes/conversations";
 import { usersRouter } from "./routes/users";
