@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id          String       @id @default(uuid())
+  email       String
+  name        String       @default("")
+  provider    AuthProvider @default(Email)
+  preferences Json?
+  createdAt   DateTime     @default(now())
+
+  //relations
+  conversations Conversation[]
+  personas      Persona[]
+  memories      UserMemory[]
+}
+
+// A customization profile that shapes how the agent responds.
+// Exactly zero or one persona per user is active at a time.
+model Persona {
+  id                 String   @id @default(uuid())
+  userId             String
+  name               String
+  aboutYou           String   @default("")
+  occupation         String   @default("")
+  traits             String[] @default([])
+  responseStyle      String   @default("balanced")
+  customInstructions String   @default("")
+  isActive           Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// Long-term agent memory: durable facts about the user extracted from
+// conversations, recalled at question time via pgvector similarity.
+model UserMemory {
+  id                   String                      @id @default(uuid())
+  userId               String
+  content              String
+  category             String                      @default("general")
+  embedding            Unsupported("vector(768)")?
+  sourceConversationId String?
+  createdAt            DateTime                    @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Conversation {
+  id        String   @id @default(uuid())
+  title     String
+  userId    String
+  createdAt DateTime @default(now())
+
+  // relations
+  user     User      @relation(fields: [userId], references: [id])
+  messages Message[]
+}
+
+model Message {
+  id             String         @id @default(uuid())
+  conversationId String
+  role           MessageRole
+  content        String
+  model          String?
+  modelProvider  ModelProvider?
+  createdAt      DateTime       @default(now())
+
+  // relations
+  conversation Conversation @relation(fields: [conversationId], references: [id])
+}
+
+model SearchCache {
+  id          String                     @id @default(uuid())
+  query       String // Original query text
+  embedding   Unsupported("vector(768)") // Gemini text-embedding-004 = 768 dims
+  sources     Json // Serialised SearchSource[] from Tavily
+  llmResponse String // The full assistant answer (optional reuse)
+  createdAt   DateTime                   @default(now())
+}
+
+enum MessageRole {
+  User
+  Assistant
+}
+
+enum AuthProvider {
+  Email
+  Google
+}
+
+enum ModelProvider {
+  OpenRouter
+  Google
+}
